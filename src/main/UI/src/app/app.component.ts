@@ -28,7 +28,22 @@ export class AppComponent implements OnInit{
   currentCheckInVal!:string;
   currentCheckOutVal!:string;
 
+  // ADD TO README
+  messages!: string;
+
+  getWelcomeMessage():Observable<string[]>{
+    return this.httpClient.get<string[]>(this.baseURL + '/api/WelcomeMessage.java');
+  }
     ngOnInit(){
+
+      // ADD TO README
+      this.getWelcomeMessage().subscribe(
+        messages=>{
+          console.log(Object.values(messages))
+          this.messages=<any>Object.values(messages);
+        }
+      )
+
       this.roomsearch= new FormGroup({
         checkin: new FormControl(' '),
         checkout: new FormControl(' ')

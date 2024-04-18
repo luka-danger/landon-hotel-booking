@@ -22,7 +22,7 @@ public class WelcomeMessage {
             try {
                 InputStream streamFrench = new ClassPathResource("welcome_fr_CA.properties").getInputStream();
                 properties.load(streamFrench);
-                System.out.println(properties.getProperty("welcome"));
+                // System.out.println(properties.getProperty("welcome"));
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -32,11 +32,10 @@ public class WelcomeMessage {
             try {
                 InputStream streamEnglish = new ClassPathResource("welcome_en_US.properties").getInputStream();
                 properties.load(streamEnglish);
-                System.out.println(properties.getProperty("welcome"));
+                // System.out.println(properties.getProperty("welcome"));
             }
             catch (Exception e) {
                 e.printStackTrace();
-                System.out.println("welcome");
             }
         });
         return properties.getProperty("welcome");
