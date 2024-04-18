@@ -29,18 +29,21 @@ export class AppComponent implements OnInit{
   currentCheckOutVal!:string;
 
   // ADD TO README
-  messages!: string;
+  message!: string;
+  welcome!: string;
+
 
   getWelcomeMessage():Observable<string[]>{
     return this.httpClient.get<string[]>(this.baseURL + '/api/WelcomeMessage.java');
   }
+
     ngOnInit(){
 
       // ADD TO README
       this.getWelcomeMessage().subscribe(
-        messages=>{
-          console.log(Object.values(messages))
-          this.messages=<any>Object.values(messages);
+        message=>{
+          console.log(Object.values(message))
+          this.message=<any>Object.values(message);
         }
       )
 
