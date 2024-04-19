@@ -30,7 +30,7 @@ export class AppComponent implements OnInit{
 
   // ADD TO README
   message!: string;
-  welcome!: string;
+  // welcome!: string;
 
 
   getWelcomeMessage():Observable<string[]>{

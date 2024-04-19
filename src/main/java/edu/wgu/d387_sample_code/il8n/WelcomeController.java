@@ -13,7 +13,7 @@ public class WelcomeController {
 
     @RequestMapping(path="/WelcomeMessage.java", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String[] showMessage() {
-        String finalMessage = "Welcome!";
+        String finalMessage = WelcomeMessage.getWelcomeMessage();
         return new String[]{finalMessage};
     }
 }
