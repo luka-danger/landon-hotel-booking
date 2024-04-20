@@ -30,7 +30,11 @@ export class AppComponent implements OnInit{
 
   // ADD TO README
   message!: string;
-  // welcome!: string;
+  presentation!: string;
+
+  displayPresentation():Observable<string[]>{
+    return this.httpClient.get<string[]>(this.baseURL + '/api/TimeZoneConversion.java');
+  }
 
 
   getWelcomeMessage():Observable<string[]>{
@@ -44,6 +48,13 @@ export class AppComponent implements OnInit{
         message=>{
           console.log(Object.values(message))
           this.message=<any>Object.values(message);
+        }
+      )
+
+      this.displayPresentation().subscribe(
+        presentation => {
+          console.log(Object.values(presentation))
+          this.presentation=<any>Object.values(presentation)
         }
       )
 
