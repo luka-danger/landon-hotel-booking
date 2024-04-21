@@ -13,57 +13,58 @@ import {map} from "rxjs/operators";
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
 
-  constructor(private httpClient:HttpClient){}
+  constructor(private httpClient: HttpClient) {
+  }
 
-  private baseURL:string='http://localhost:8080';
+  private baseURL: string = 'http://localhost:8080';
 
-  private getUrl:string = this.baseURL + '/room/reservation/v1/';
-  private postUrl:string = this.baseURL + '/room/reservation/v1';
-  public submitted!:boolean;
-  roomsearch! : FormGroup;
-  rooms! : Room[];
-  request!:ReserveRoomRequest;
-  currentCheckInVal!:string;
-  currentCheckOutVal!:string;
+  private getUrl: string = this.baseURL + '/room/reservation/v1/';
+  private postUrl: string = this.baseURL + '/room/reservation/v1';
+  public submitted!: boolean;
+  roomsearch!: FormGroup;
+  rooms!: Room[];
+  request!: ReserveRoomRequest;
+  currentCheckInVal!: string;
+  currentCheckOutVal!: string;
 
   // ADD TO README
   message!: string;
   presentation!: string;
 
-  displayPresentation():Observable<string[]>{
+  displayPresentation(): Observable<string[]> {
     return this.httpClient.get<string[]>(this.baseURL + '/api/TimeZoneConversion.java');
   }
 
 
-  getWelcomeMessage():Observable<string[]>{
+  getWelcomeMessage(): Observable<string[]> {
     return this.httpClient.get<string[]>(this.baseURL + '/api/WelcomeMessage.java');
   }
 
-    ngOnInit(){
+  ngOnInit() {
 
-      // ADD TO README
-      this.getWelcomeMessage().subscribe(
-        message=>{
-          console.log(Object.values(message))
-          this.message=<any>Object.values(message);
-        }
-      )
+    // ADD TO README
+    this.getWelcomeMessage().subscribe(
+      message => {
+        console.log(Object.values(message))
+        this.message = <any>Object.values(message);
+      }
+    )
 
-      this.displayPresentation().subscribe(
-        presentation => {
-          console.log(Object.values(presentation))
-          this.presentation=<any>Object.values(presentation)
-        }
-      )
+    this.displayPresentation().subscribe(
+      presentation => {
+        console.log(Object.values(presentation))
+        this.presentation = <any>Object.values(presentation)
+      }
+    )
 
-      this.roomsearch= new FormGroup({
-        checkin: new FormControl(' '),
-        checkout: new FormControl(' ')
-      });
+    this.roomsearch = new FormGroup({
+      checkin: new FormControl(' '),
+      checkout: new FormControl(' ')
+    });
 
- //     this.rooms=ROOMS;
+    //     this.rooms=ROOMS;
 
 
     const roomsearchValueChanges$ = this.roomsearch.valueChanges;
@@ -75,45 +76,78 @@ export class AppComponent implements OnInit{
     });
   }
 
-    onSubmit({value,valid}:{value:Roomsearch,valid:boolean}){
-      this.getAll().subscribe(
+  onSubmit({value, valid}: { value: Roomsearch, valid: boolean }) {
+    this.getAll().subscribe(
+      rooms => {
+        console.log(Object.values(rooms)[0]);
+        this.rooms = <Room[]>Object.values(rooms)[0];
+      }
+    );
+  }
 
-        rooms => {console.log(Object.values(rooms)[0]);this.rooms=<Room[]>Object.values(rooms)[0]; }
+  reserveRoom(value: string) {
+    this.request = new ReserveRoomRequest(value, this.currentCheckInVal, this.currentCheckOutVal);
 
+    this.createReservation(this.request);
+  }
 
-      );
-    }
-    reserveRoom(value:string){
-      this.request = new ReserveRoomRequest(value, this.currentCheckInVal, this.currentCheckOutVal);
+  createReservation(body: ReserveRoomRequest) {
+    let bodyString = JSON.stringify(body); // Stringify payload
+    let headers = new Headers({'Content-Type': 'application/json'}); // ... Set content type to JSON
+    // let options = new RequestOptions({headers: headers}); // Create a request option
 
-      this.createReservation(this.request);
-    }
-    createReservation(body:ReserveRoomRequest) {
-      let bodyString = JSON.stringify(body); // Stringify payload
-      let headers = new Headers({'Content-Type': 'application/json'}); // ... Set content type to JSON
-     // let options = new RequestOptions({headers: headers}); // Create a request option
-
-     const options = {
+    const options = {
       headers: new HttpHeaders().append('key', 'value'),
 
     }
 
-      this.httpClient.post(this.postUrl, body, options)
-        .subscribe(res => console.log(res));
-    }
+    this.httpClient.post(this.postUrl, body, options)
+      .subscribe(res => console.log(res));
+  }
 
   /*mapRoom(response:HttpResponse<any>): Room[]{
     return response.body;
   }*/
 
-    getAll(): Observable<any> {
+  getAll(): Observable<any> {
 
 
-       return this.httpClient.get(this.baseURL + '/room/reservation/v1?checkin='+ this.currentCheckInVal + '&checkout='+this.currentCheckOutVal, {responseType: 'json'});
-    }
-
+    return this.httpClient.get(this.baseURL + '/room/reservation/v1?checkin=' + this.currentCheckInVal + '&checkout=' + this.currentCheckOutVal, {responseType: 'json'});
   }
 
+  //
+  convertPrice(priceUSD: string, currency: string): string {
+    switch (currency) {
+      case 'USD':
+        return (parseFloat(priceUSD)).toFixed(2);
+      case 'CAD':
+        return (parseFloat(priceUSD) * 1.38).toFixed(2);
+      case 'EUR':
+        return (parseFloat(priceUSD) * 0.94).toFixed(2);
+      default:
+        return 'N/A';
+    }
+  }
+
+  getFormattedPrice(room: Room, currency: string): string {
+    const convertedPrice = this.convertPrice(room.price, currency);
+    return `${this.getCurrencySymbol(currency)}${convertedPrice}`;
+  }
+
+  getCurrencySymbol(currency: string): string {
+    switch(currency) {
+      case 'USD':
+        return '$';
+      case 'CAD':
+        return 'CA$';
+      case 'EUR':
+        return '€';
+      default:
+        return currency;
+    }
+  }
+
+}
 
 
 export interface Roomsearch{
@@ -145,6 +179,8 @@ export class ReserveRoomRequest {
     this.checkout = checkout;
   }
 }
+
+
 
 /*
 var ROOMS: Room[]=[
