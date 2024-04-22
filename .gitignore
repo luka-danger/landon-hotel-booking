@@ -3,6 +3,8 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+!target/D387_sample_code-0.0.2-SNAPSHOT.jar
+!target/D387_sample_code-0.0.2-SNAPSHOT.jar.original
 
 ### STS ###
 .apt_generated
